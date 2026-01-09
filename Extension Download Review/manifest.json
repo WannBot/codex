@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Shopee Reviews Downloader",
+  "version": "5.3.6",
+  "description": "Shopee review downloader dengan UI ala Mota + logo bintang.",
+  "permissions": [
+    "downloads",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.shopee.co.id/*",
+    "*://*.xiapibuy.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Shopee Review Downloader",
+    "default_icon": {
+      "16": "logo_star.png",
+      "32": "logo_star.png",
+      "48": "logo_star.png"
+    }
+  },
+  "icons": {
+    "16": "logo_star.png",
+    "32": "logo_star.png",
+    "48": "logo_star.png",
+    "128": "logo_star.png"
+  }
+}
