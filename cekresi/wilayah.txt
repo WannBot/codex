@@ -1,0 +1,7 @@
+jakarta
+bogor
+depok
+tangerang
+bekasi
+bandung
+
