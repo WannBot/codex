@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Shopee Reviews Downloader",
-  "version": "5.3.6",
-  "description": "Shopee review downloader dengan UI ala Mota + logo bintang.",
+  "version": "5.3.7",
+  "description": "Shopee review downloader dengan checkbox langsung di halaman review.",
   "permissions": [
     "downloads",
     "activeTab",
@@ -11,6 +11,17 @@
   "host_permissions": [
     "*://*.shopee.co.id/*",
     "*://*.xiapibuy.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.shopee.co.id/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
   ],
   "background": {
     "service_worker": "background.js"
