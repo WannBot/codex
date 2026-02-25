@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Shopee Review Downloader</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      width: 380px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .shell {
+      padding: 10px;
+    }
+    .app-card {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.12),
+        0 0 0 1px rgba(229,231,235,0.9);
+      padding: 16px 18px 18px;
+    }
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: #facc15;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+    }
+    .logo-text {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+    }
+    .version-pill {
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: #111827;
+      color: #f9fafb;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      background: #e5e7eb;
+      padding: 4px;
+      border-radius: 999px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #6b7280;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .tab input {
+      display: none;
+    }
+    .tab.active {
+      background: #ffffff;
+      color: #111827;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .section {
+      padding: 10px 2px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .section:last-of-type {
+      border-bottom: none;
+      padding-bottom: 4px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .section-subtitle {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 4px;
+      display: block;
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 12px;
+      color: #111827;
+      outline: none;
+    }
+    input[type="text"]::placeholder,
+    input[type="number"]::placeholder {
+      color: #9ca3af;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #111827;
+      background: #ffffff;
+    }
+
+    select {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 12px;
+      color: #111827;
+      outline: none;
+    }
+    select:focus {
+      border-color: #111827;
+      background: #ffffff;
+    }
+
+    .variant-block {
+      margin-top: 6px;
+    }
+    .variant-list {
+      margin-top: 4px;
+      max-height: 110px;
+      overflow-y: auto;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 6px 8px;
+    }
+    .variant-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 2px 0;
+      color: #111827;
+      cursor: pointer;
+    }
+    .variant-item input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #111827;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      gap: 8px;
+    }
+    .inline-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .inline-row input[type="text"] {
+      flex: 1;
+    }
+    .mini-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #111827;
+      color: #f9fafb;
+      white-space: nowrap;
+    }
+    #downloadReviews {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #111827;
+      color: #f9fafb;
+      box-shadow: 0 6px 16px rgba(15,23,42,0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+    }
+    #downloadReviews:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(15,23,42,0.45);
+    }
+    #downloadReviews:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(15,23,42,0.4);
+    }
+    #downloadReviews:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    #status {
+      margin-top: 8px;
+      font-size: 10px;
+      color: #6b7280;
+      background: #f9fafb;
+      border-radius: 999px;
+      padding: 6px 9px;
+      border: 1px solid #e5e7eb;
+      white-space: normal;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="app-card">
+      <div class="app-header">
+        <div class="logo-wrap">
+          <div class="logo-icon">
+            <img src="logo_star.png" alt="Logo">
+          </div>
+          <div class="logo-text">Shopee</div>
+        </div>
+        <div class="version-pill">Review v5.3.15</div>
+      </div>
+
+      <div class="tabs">
+        <label class="tab active" data-mode="one">
+          <input type="radio" name="mode" value="one" checked />
+          1 Page Full
+        </label>
+        <label class="tab" data-mode="all">
+          <input type="radio" name="mode" value="all" />
+          Semua Page (per Varian)
+        </label>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Kirim Reviews ke WhatsApp</div>
+        <div class="section-subtitle">
+          Kirim review terpilih ke SenderBlast lalu diteruskan ke WhatsApp.
+        </div>
+
+        <label class="field-label" for="basename">Nama folder utama</label>
+        <input id="basename" type="text" placeholder="Default: Penilaian_[timestamp]" />
+
+        <label class="field-label" for="pageLimit" style="margin-top:8px;">Batas page</label>
+        <input id="pageLimit" type="number" min="1" placeholder="Kosong = hanya page aktif, isi N = maju sampai N page" />
+        <div class="hint">
+          Tentukan batas page, Extension akan memulai download ketika sudah mencapai batas page.
+        </div>
+      </div>
+
+
+      <div class="section">
+        <div class="section-title">Pengaturan WhatsApp Gateway</div>
+        <div class="section-subtitle">
+          Simpan nomor tujuan WhatsApp agar otomatis dipakai saat kirim API.
+        </div>
+
+        <label class="field-label" for="waTarget">Nomor Target/Tujuan</label>
+        <div class="inline-row">
+          <input id="waTarget" type="text" placeholder="Contoh: 6281234567890" />
+          <button id="saveWaTarget" class="mini-btn" type="button">Simpan Nomor</button>
+          <button id="editWaTarget" class="mini-btn" type="button" style="display:none;">Edit Nomor</button>
+        </div>
+
+        <label class="field-label" for="waSender" style="margin-top:8px;">Nomor Sender (WA terhubung)</label>
+        <div class="inline-row">
+          <input id="waSender" type="text" placeholder="Contoh: 6281111111111" />
+          <button id="saveWaSender" class="mini-btn" type="button">Simpan Sender</button>
+        </div>
+
+        <label class="field-label" for="waApiBaseUrl" style="margin-top:8px;">API Base URL (opsional)</label>
+        <div class="inline-row">
+          <input id="waApiBaseUrl" type="text" placeholder="Contoh: https://app.senderblast.com" />
+          <button id="saveApiBase" class="mini-btn" type="button">Simpan API URL</button>
+        </div>
+      </div>
+
+      <div class="section" id="variantFieldset">
+        <div class="section-title">Filter varian</div>
+        <div class="section-subtitle">
+          Aktif hanya di mode "Semua Page (per Varian)".
+        </div>
+
+        <div class="variant-block">
+          <span class="field-label">Pilih varian (boleh lebih dari satu):</span>
+          <div id="variantList" class="variant-list"></div>
+          <div class="hint">
+            Kosongkan = ambil semua varian. Data dari grup varian pertama
+            <code>div.flex.items-center.j7HL5Q</code>. Ukuran/spesifikasi kedua di-skip.
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Filter media</div>
+        <div class="section-subtitle">
+          Batasi review berdasarkan jumlah foto + video.
+        </div>
+
+        <label class="field-label" for="mediaCount">Jumlah media per review</label>
+        <select id="mediaCount">
+          <option value="">Semua (no filter)</option>
+          <option value="3">Minimal 3 Media (3–6 foto/video)</option>
+        </select>
+        <div class="hint">
+          "Minimal 3 Media" = hanya review dengan total media 3 s/d 6, bebas kombinasi foto/video.
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <button id="downloadReviews">Start Download</button>
+      </div>
+
+      <div id="status">Status: siap…</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+  <script>
+    // Tab UI: sinkron dengan radio "mode"
+    function refreshTabs() {
+      const radios = document.querySelectorAll("input[name='mode']");
+      radios.forEach((r) => {
+        const tab = r.closest(".tab");
+        if (!tab) return;
+        if (r.checked) {
+          tab.classList.add("active");
+        } else {
+          tab.classList.remove("active");
+        }
+      });
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      refreshTabs();
+      document.querySelectorAll(".tab input[name='mode']").forEach((inp) => {
+        inp.addEventListener("change", refreshTabs);
+      });
+    });
+  </script>
+</body>
+</html>

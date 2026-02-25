@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Shopee Reviews Downloader",
+  "version": "5.3.15",
+  "description": "Shopee review downloader + kirim otomatis ke WhatsApp gateway.",
+  "permissions": [
+    "downloads",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.shopee.co.id/*",
+    "*://*.xiapibuy.com/*",
+    "https://*.senderblast.com/*",
+    "https://senderblast.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.shopee.co.id/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Shopee Review Downloader",
+    "default_icon": {
+      "16": "logo_star.png",
+      "32": "logo_star.png",
+      "48": "logo_star.png"
+    }
+  },
+  "icons": {
+    "16": "logo_star.png",
+    "32": "logo_star.png",
+    "48": "logo_star.png",
+    "128": "logo_star.png"
+  }
+}
