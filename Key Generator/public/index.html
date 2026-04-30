@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shopee KeyGen — Admin Panel</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#0B1014; --surface:#111B21; --sf2:#1F2C34; --border:#2A3942;
+    --text:#E9EDEF; --muted:#8696A0; --green:#00A884; --green2:#25D366;
+    --gdim:rgba(0,168,132,.12); --orange:#EE4D2D; --red:#EF4444; --yellow:#F59E0B;
+    --r:12px;
+  }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',-apple-system,'Helvetica Neue',sans-serif; min-height:100vh; }
+
+  /* ── LOGIN ── */
+  #loginOverlay { position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px; }
+  #loginOverlay.hidden { display:none; }
+  .login-card { background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6); }
+  .login-logo  { width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#EE4D2D,#F77B51);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px;box-shadow:0 6px 20px rgba(238,77,45,.4); }
+  .login-title { font-size:20px;font-weight:800;margin-bottom:4px; }
+  .login-sub   { font-size:12px;color:var(--muted);margin-bottom:28px; }
+  .login-card input { width:100%;background:var(--sf2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:12px;transition:border-color .15s; }
+  .login-card input:focus { border-color:var(--green); }
+  .login-card .login-btn { width:100%;background:linear-gradient(135deg,var(--green),#128C7E);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,168,132,.3);transition:transform .15s; }
+  .login-card .login-btn:hover { transform:translateY(-1px); }
+  #loginError { font-size:12px;color:var(--red);margin-top:10px;min-height:16px; }
+
+  /* ── NAV ── */
+  .nav { background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100; }
+  .nav-brand { display:flex;align-items:center;gap:10px; }
+  .nav-logo  { width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#EE4D2D,#F77B51);display:flex;align-items:center;justify-content:center;font-size:18px; }
+  .nav-title { font-size:15px;font-weight:800; }
+  .nav-sub   { font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+  .nav-right { display:flex;align-items:center;gap:10px; }
+  .nav-badge { background:var(--gdim);color:var(--green);border:1px solid rgba(0,168,132,.25);font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px; }
+  #logoutBtn { background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s; }
+  #logoutBtn:hover { border-color:var(--red);color:var(--red); }
+
+  /* ── MAIN ── */
+  .main { max-width:1300px;margin:0 auto;padding:20px 16px; }
+
+  /* ── STATS ── */
+  .stats-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px; }
+  .stat-card  { background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px; }
+  .stat-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px; }
+  .stat-val   { font-size:28px;font-weight:800;line-height:1; }
+  .c-green { color:var(--green2); } .c-orange { color:var(--orange); } .c-red { color:var(--red); } .c-yellow { color:var(--yellow); }
+
+  /* ── PANELS ── */
+  .panels { display:grid;grid-template-columns:300px 1fr;gap:16px; }
+  .panel  { background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden; }
+  .panel-hdr { padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px; }
+  .ph-icon { width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px; }
+  .ph-g { background:var(--gdim); } .ph-o { background:rgba(238,77,45,.12); }
+  .panel-body { padding:18px; }
+
+  /* ── FORM ── */
+  .ff { margin-bottom:13px; }
+  .fl { display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px; }
+  .fi, .fs { width:100%;background:var(--sf2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit;transition:border-color .15s;appearance:none; }
+  .fi:focus,.fs:focus { border-color:var(--green); }
+  .dur-row { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+  .cnt-row { display:flex;gap:8px;align-items:flex-end; }
+  .cnt-row .ff { flex:1;margin-bottom:0; }
+  .btn { border:none;border-radius:9px;padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap; }
+  .btn-p { background:linear-gradient(135deg,var(--green),#128C7E);color:#fff;box-shadow:0 4px 14px rgba(0,168,132,.25); }
+  .btn-p:hover { transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,168,132,.35); }
+  .btn-full { width:100%;justify-content:center;padding:12px;font-size:13px; }
+
+  #genResult { display:none;margin-top:16px; }
+  .gen-lbl { font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600; }
+  .key-pill { background:var(--sf2);border:1px solid rgba(0,168,132,.2);border-radius:8px;padding:8px 12px;font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:var(--green2);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s; }
+  .key-pill:hover { background:rgba(0,168,132,.08); }
+  .copy-hint { font-size:9px;color:var(--muted);font-family:inherit;flex-shrink:0;margin-left:6px; }
+  .key-pill.copied { border-color:var(--green);background:var(--gdim); }
+  .key-pill.copied .copy-hint { color:var(--green); }
+
+  /* ── TABLE ── */
+  .tbar { padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap; }
+  .si   { background:var(--sf2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit;width:180px;transition:border-color .15s; }
+  .si:focus { border-color:var(--green); }
+  .tw { overflow-x:auto; }
+  table { width:100%;border-collapse:collapse;font-size:12px; }
+  th { text-align:left;padding:9px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap; }
+  td { padding:9px 12px;border-bottom:1px solid rgba(42,57,66,.5);vertical-align:middle; }
+  tr:hover td { background:rgba(255,255,255,.015); }
+  tr:last-child td { border-bottom:none; }
+
+  /* Key code — clickable copy */
+  .kc {
+    font-family:'Courier New',monospace;font-weight:700;color:var(--green2);
+    cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+    padding:3px 8px;border-radius:6px;border:1px solid transparent;
+    transition:all .15s;font-size:11px;
+  }
+  .kc:hover { border-color:rgba(37,211,102,.3);background:rgba(37,211,102,.07); }
+  .kc .kc-icon { font-size:10px;opacity:.5; }
+  .kc.flash { background:rgba(37,211,102,.15);border-color:var(--green2); }
+
+  .badge { display:inline-block;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px; }
+  .ba { background:rgba(37,211,102,.12);color:var(--green2);border:1px solid rgba(37,211,102,.2); }
+  .bk { background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2); }
+  .bn { background:rgba(134,150,160,.1);color:var(--muted);border:1px solid rgba(134,150,160,.2); }
+
+  .exp-time { font-size:10px;white-space:nowrap; }
+  .exp-time.expired { color:var(--red); }
+  .exp-time.soon    { color:var(--yellow); }
+  .exp-time.ok      { color:var(--muted); }
+  .created-time { font-size:10px;color:var(--muted); }
+
+  .abtns { display:flex;gap:5px; }
+  .ib { background:none;border:1px solid var(--border);border-radius:7px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s; }
+  .ib-e:hover { border-color:#60A5FA;background:rgba(96,165,250,.08); }
+  .ib-d:hover { border-color:var(--red);background:rgba(239,68,68,.08); }
+
+  /* ── PAGINATION ── */
+  .pag { display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);flex-wrap:wrap;gap:8px; }
+  .pbtns { display:flex;gap:6px;flex-wrap:wrap; }
+  .pb { background:var(--sf2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s; }
+  .pb:hover:not(:disabled) { border-color:var(--green);color:var(--green); }
+  .pb:disabled { opacity:.35;cursor:not-allowed; }
+  .pb.active { background:var(--green);border-color:var(--green);color:#fff; }
+
+  /* ── EDIT MODAL ── */
+  .mbk { position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s; }
+  .mbk.open { opacity:1;pointer-events:auto; }
+  .modal { background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:440px;overflow:hidden;transform:scale(.95);transition:transform .2s;box-shadow:0 24px 60px rgba(0,0,0,.6); }
+  .mbk.open .modal { transform:scale(1); }
+  .mhdr { padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+  .mtitle { font-size:14px;font-weight:800; }
+  .mclose { background:none;border:1px solid var(--border);border-radius:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:15px;transition:all .15s; }
+  .mclose:hover { border-color:var(--red);color:var(--red); }
+  .mbody { padding:20px; }
+  .mk-lbl { font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+  .mk-val { font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:var(--green2);margin-bottom:16px;background:var(--sf2);border:1px solid var(--border);border-radius:8px;padding:8px 12px; }
+  .mk-info { font-size:11px;color:var(--muted);margin-bottom:16px;background:var(--sf2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;line-height:1.8; }
+  .mk-info span { color:var(--text);font-weight:600; }
+  .mk-info .expired-badge { color:var(--red);font-size:10px;font-weight:700;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:4px;padding:1px 6px;margin-left:4px; }
+  .mfooter { padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end; }
+  .btn-cancel { background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
+  .btn-cancel:hover { border-color:var(--muted);color:var(--text); }
+  .btn-save { background:linear-gradient(135deg,var(--green),#128C7E);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
+  .btn-save:hover { transform:translateY(-1px); }
+
+  /* Add-duration info callout */
+  .dur-callout { font-size:10px;color:var(--muted);margin-top:5px;padding:7px 10px;background:rgba(0,168,132,.06);border:1px solid rgba(0,168,132,.15);border-radius:7px;line-height:1.6; }
+  .dur-callout strong { color:var(--green); }
+
+  /* toggle status */
+  .tgroup { display:flex;gap:6px; }
+  .topt   { flex:1;text-align:center;padding:8px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s; }
+  .topt.sel-a { border-color:var(--green2);color:var(--green2);background:rgba(37,211,102,.08); }
+  .topt.sel-n { border-color:var(--muted);color:var(--muted);background:rgba(134,150,160,.08); }
+
+  /* ── DELETE CONFIRM ── */
+  .cbk { position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s; }
+  .cbk.open { opacity:1;pointer-events:auto; }
+  .cbox { background:var(--surface);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center;transform:scale(.95);transition:transform .2s; }
+  .cbk.open .cbox { transform:scale(1); }
+  .cicon  { font-size:36px;margin-bottom:12px; }
+  .ctitle { font-size:15px;font-weight:800;margin-bottom:6px; }
+  .csub   { font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5; }
+  .cbtns  { display:flex;gap:8px; }
+  .cbtns .btn-cancel { flex:1; }
+  .btn-danger { flex:1;background:linear-gradient(135deg,var(--red),#DC2626);color:#fff;border:none;border-radius:9px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
+  .btn-danger:hover { transform:translateY(-1px); }
+
+  /* ── TOAST ── */
+  #toast { position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 18px;font-size:12px;font-weight:600;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;transition:all .25s;z-index:9998;pointer-events:none;white-space:nowrap; }
+  #toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+  #toast.ok  { border-color:rgba(37,211,102,.4);color:var(--green2); }
+  #toast.err { border-color:rgba(239,68,68,.4);color:var(--red); }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:960px) {
+    .stats-grid { grid-template-columns:1fr 1fr; }
+    .panels     { grid-template-columns:1fr; }
+  }
+  @media(max-width:600px) {
+    .stat-val { font-size:22px; }
+    .main { padding:10px 8px; }
+    .nav  { padding:0 12px; }
+    .nav-sub { display:none; }
+    th:nth-child(4),td:nth-child(4) { display:none; } /* sembunyikan kolom Dibuat di HP */
+    .si { width:120px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">🛒</div>
+    <div class="login-title">Shopee KeyGen</div>
+    <div class="login-sub">Admin Panel — License Key Manager</div>
+    <input type="password" id="adminPassInput" placeholder="Admin Password..." autocomplete="current-password"/>
+    <button class="login-btn" id="doLoginBtn">Masuk ke Admin Panel</button>
+    <div id="loginError"></div>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">🛒</div>
+    <div><div class="nav-title">Shopee KeyGen</div><div class="nav-sub">Admin Panel</div></div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-badge">⬤ Online</div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Total Key</div><div class="stat-val" id="statTotal">—</div></div>
+    <div class="stat-card"><div class="stat-label">Aktif</div><div class="stat-val c-green" id="statActive">—</div></div>
+    <div class="stat-card"><div class="stat-label">Kadaluarsa</div><div class="stat-val c-red" id="statExpired">—</div></div>
+    <div class="stat-card"><div class="stat-label">Sudah Dipakai</div><div class="stat-val c-yellow" id="statUsed">—</div></div>
+  </div>
+
+  <div class="panels">
+    <!-- GENERATE -->
+    <div class="panel">
+      <div class="panel-hdr"><div class="ph-icon ph-g">🔑</div>Generate Key Baru</div>
+      <div class="panel-body">
+        <div class="ff"><label class="fl">Label (opsional)</label><input type="text" class="fi" id="genLabel" placeholder="Paket 7 Hari"/></div>
+        <div class="dur-row">
+          <div class="ff"><label class="fl">Durasi</label><input type="number" class="fi" id="genDurVal" value="7" min="1"/></div>
+          <div class="ff"><label class="fl">Satuan</label>
+            <select class="fs" id="genDurType">
+              <option value="minute">Menit</option>
+              <option value="day" selected>Hari</option>
+              <option value="month">Bulan</option>
+            </select>
+          </div>
+        </div>
+        <div class="ff"><label class="fl">Catatan</label><input type="text" class="fi" id="genNote" placeholder="email / nama customer"/></div>
+        <div class="cnt-row">
+          <div class="ff"><label class="fl">Jumlah</label><input type="number" class="fi" id="genCount" value="1" min="1" max="100"/></div>
+          <button class="btn btn-p" id="genBtn" style="padding:9px 18px;flex-shrink:0">⚡ Generate</button>
+        </div>
+        <div id="genResult">
+          <div class="gen-lbl">✅ Klik key untuk copy:</div>
+          <div id="genKeyList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="panel">
+      <div class="tbar">
+        <div class="panel-hdr" style="padding:0;border:none"><div class="ph-icon ph-o" style="margin:0">📋</div>Daftar License Key</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="text" class="si" id="searchInput" placeholder="Cari key / label..."/>
+          <button class="btn btn-p" id="refreshBtn" style="padding:7px 14px;font-size:11px">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Key Code</th>
+              <th>Label</th>
+              <th>Status</th>
+              <th>Dibuat</th>
+              <th>Berakhir</th>
+              <th>Sisa</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="keysBody">
+            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Memuat...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pag">
+        <div id="pageInfo">—</div>
+        <div class="pbtns" id="pageBtns"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EDIT MODAL ═══ -->
+<div class="mbk" id="editModal">
+  <div class="modal">
+    <div class="mhdr">
+      <div class="mtitle">✏️ Modifikasi License Key</div>
+      <button class="mclose" id="closeEditBtn">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="mk-lbl">Key</div>
+      <div class="mk-val" id="modalKeyCode">—</div>
+      <div class="mk-info" id="modalKeyInfo">—</div>
+
+      <div class="ff"><label class="fl">Label</label><input type="text" class="fi" id="modalLabel" placeholder="Label key..."/></div>
+
+      <div class="ff">
+        <label class="fl">Tambah Durasi</label>
+        <div class="dur-row">
+          <input type="number" class="fi" id="modalAddVal" value="0" min="0"/>
+          <select class="fs" id="modalAddType">
+            <option value="minute">Menit</option>
+            <option value="day" selected>Hari</option>
+            <option value="month">Bulan</option>
+          </select>
+        </div>
+        <div class="dur-callout" id="durCallout">
+          Isi angka &gt; 0 untuk menambah masa berlaku. Durasi dihitung dari <strong>sekarang</strong> jika key sudah expired.
+        </div>
+      </div>
+
+      <div class="ff">
+        <label class="fl">Status</label>
+        <div class="tgroup" id="statusGroup">
+          <div class="topt sel-a" data-val="1">✅
